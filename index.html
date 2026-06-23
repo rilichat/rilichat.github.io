@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light dark">
-  <title>Rili Mirrors</title>
+  <title>Rili Mirror Release Page</title>
   <style>
     :root {
       --bg: #f7f4ee;
@@ -47,11 +47,15 @@
 
     html {
       min-height: 100%;
-      background: var(--bg);
+      background:
+        linear-gradient(120deg, rgba(39, 102, 176, 0.10), transparent 34%),
+        linear-gradient(260deg, rgba(22, 138, 74, 0.10), transparent 34%),
+        var(--bg);
     }
 
     body {
-      min-height: 100%;
+      min-height: 100vh;
+      min-height: 100dvh;
       margin: 0;
       color: var(--ink);
       background:
@@ -502,7 +506,7 @@
     <section class="hero" aria-labelledby="page-title">
       <div>
         <p class="eyebrow" data-i18n="eyebrow">Multi-domain gateway</p>
-        <h1 id="page-title" data-i18n="headline">Rili 镜像发布页</h1>
+        <h1 id="page-title" data-i18n="headline">Rili Mirror Release Page</h1>
         <p class="subtitle" data-i18n="subtitle">This page checks each configured site from your device, shows its response delay, and opens the selected domain when you click a card.</p>
       </div>
       <div class="actions">
@@ -555,10 +559,10 @@
   <script>
     const TRANSLATIONS = {
       en: {
-        title: "Rili 镜像发布页",
+        title: "Rili Mirror Release Page",
         languageLabel: "Language",
         eyebrow: "Multi-domain gateway",
-        headline: "Rili 镜像发布页",
+        headline: "Rili Mirror Release Page",
         subtitle: "This page checks each configured site from your device, shows its response delay, and opens the selected domain when you click a card.",
         retest: "Retest",
         retestTitle: "Retest every site",
@@ -579,10 +583,10 @@
         mirrorSite: "Mirror {number}"
       },
       ja: {
-        title: "Rili 镜像发布页",
+        title: "Rili ミラー公開ページ",
         languageLabel: "言語",
         eyebrow: "マルチドメインゲートウェイ",
-        headline: "Rili 镜像发布页",
+        headline: "Rili ミラー公開ページ",
         subtitle: "このページはお使いの端末から各サイトへの接続を確認し、応答遅延を表示します。カードをクリックすると選択したドメインを開きます。",
         retest: "再テスト",
         retestTitle: "すべてのサイトを再テスト",
@@ -603,10 +607,10 @@
         mirrorSite: "ミラー {number}"
       },
       ko: {
-        title: "Rili 镜像发布页",
+        title: "Rili 미러 배포 페이지",
         languageLabel: "언어",
         eyebrow: "멀티 도메인 게이트웨이",
-        headline: "Rili 镜像发布页",
+        headline: "Rili 미러 배포 페이지",
         subtitle: "이 페이지는 사용 중인 기기에서 각 사이트의 연결 상태를 확인하고 응답 지연 시간을 표시합니다. 카드를 클릭하면 선택한 도메인으로 이동합니다.",
         retest: "다시 테스트",
         retestTitle: "모든 사이트 다시 테스트",
@@ -668,7 +672,7 @@
       "https://rilichat.com",
       "https://riliaichat.com",
       "https://woahchat.com",
-      "https://tell-me-ai.com",
+      "https://tell-me-ai.com"
     ];
 
     const CHECK_TIMEOUT_MS = 8000;

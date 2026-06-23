@@ -1,0 +1,944 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Rili 镜像发布页</title>
+  <style>
+    :root {
+      --bg: #f7f4ee;
+      --bg-strong: #fffaf0;
+      --ink: #20201d;
+      --muted: #66645d;
+      --line: #d8d1c3;
+      --panel: #ffffff;
+      --online: #168a4a;
+      --online-bg: #e5f6ec;
+      --slow: #a76500;
+      --slow-bg: #fff0cc;
+      --offline: #b42318;
+      --offline-bg: #fee8e5;
+      --checking: #2766b0;
+      --checking-bg: #e5effa;
+      --shadow: 0 18px 50px rgba(36, 32, 23, 0.12);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #151617;
+        --bg-strong: #1f211f;
+        --ink: #f4f0e8;
+        --muted: #b9b3aa;
+        --line: #383a38;
+        --panel: #202221;
+        --online-bg: #123826;
+        --slow-bg: #3c2b0d;
+        --offline-bg: #3c1714;
+        --checking-bg: #132a44;
+        --shadow: 0 18px 50px rgba(0, 0, 0, 0.28);
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-height: 100%;
+      background: var(--bg);
+    }
+
+    body {
+      min-height: 100%;
+      margin: 0;
+      color: var(--ink);
+      background:
+        linear-gradient(120deg, rgba(39, 102, 176, 0.10), transparent 34%),
+        linear-gradient(260deg, rgba(22, 138, 74, 0.10), transparent 34%),
+        var(--bg);
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    .shell {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 42px 0 56px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 24px;
+      align-items: end;
+      padding-bottom: 28px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .eyebrow {
+      margin: 0 0 10px;
+      color: var(--checking);
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      max-width: 780px;
+      margin: 0;
+      font-size: clamp(2.45rem, 7vw, 5.8rem);
+      line-height: 0.96;
+      letter-spacing: 0;
+    }
+
+    .subtitle {
+      max-width: 700px;
+      margin: 18px 0 0;
+      color: var(--muted);
+      font-size: clamp(1rem, 2.2vw, 1.2rem);
+      line-height: 1.65;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .language-picker {
+      display: inline-flex;
+      min-height: 42px;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 0 10px 0 12px;
+      color: var(--muted);
+      background: var(--panel);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+    }
+
+    .language-picker span {
+      font-size: 0.9rem;
+      font-weight: 750;
+    }
+
+    .language-picker select {
+      min-height: 30px;
+      border: 0;
+      color: var(--ink);
+      background: transparent;
+      cursor: pointer;
+      outline: none;
+    }
+
+    .language-picker:focus-within {
+      border-color: var(--checking);
+      box-shadow: 0 0 0 4px color-mix(in srgb, var(--checking), transparent 82%);
+    }
+
+    .button {
+      display: inline-flex;
+      min-height: 42px;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 0 14px;
+      color: var(--ink);
+      background: var(--panel);
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+      transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+    }
+
+    .button:hover {
+      transform: translateY(-1px);
+      border-color: color-mix(in srgb, var(--checking), var(--line) 55%);
+    }
+
+    .button:active {
+      transform: translateY(0);
+    }
+
+    .button svg {
+      width: 18px;
+      height: 18px;
+      stroke-width: 2;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin: 26px 0;
+    }
+
+    .stat {
+      min-width: 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+      background: color-mix(in srgb, var(--panel), transparent 8%);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.04);
+    }
+
+    .stat strong {
+      display: block;
+      font-size: clamp(1.55rem, 4vw, 2.4rem);
+      line-height: 1;
+    }
+
+    .stat span {
+      display: block;
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .toolbar {
+      display: grid;
+      grid-template-columns: minmax(220px, 1fr) auto;
+      gap: 14px;
+      align-items: center;
+      margin: 0 0 18px;
+    }
+
+    .search {
+      position: relative;
+    }
+
+    .search svg {
+      position: absolute;
+      top: 50%;
+      left: 13px;
+      width: 18px;
+      height: 18px;
+      color: var(--muted);
+      transform: translateY(-50%);
+      pointer-events: none;
+    }
+
+    .search input {
+      width: 100%;
+      min-height: 44px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 0 14px 0 42px;
+      color: var(--ink);
+      background: var(--panel);
+      outline: none;
+    }
+
+    .search input:focus {
+      border-color: var(--checking);
+      box-shadow: 0 0 0 4px color-mix(in srgb, var(--checking), transparent 82%);
+    }
+
+    .filters {
+      display: inline-flex;
+      min-height: 44px;
+      align-items: center;
+      gap: 4px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 4px;
+      background: var(--panel);
+    }
+
+    .filter {
+      border: 0;
+      border-radius: 6px;
+      padding: 9px 12px;
+      color: var(--muted);
+      background: transparent;
+      cursor: pointer;
+    }
+
+    .filter[aria-pressed="true"] {
+      color: var(--ink);
+      background: var(--bg-strong);
+      box-shadow: inset 0 0 0 1px var(--line);
+    }
+
+    .sites {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
+      gap: 16px;
+    }
+
+    .site-card {
+      position: relative;
+      display: grid;
+      grid-template-rows: auto auto;
+      min-height: 154px;
+      gap: 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 20px;
+      text-decoration: none;
+      background: color-mix(in srgb, var(--panel), transparent 4%);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+    }
+
+    .site-card::before {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: var(--checking);
+      content: "";
+    }
+
+    .site-card:hover {
+      transform: translateY(-3px);
+      border-color: color-mix(in srgb, var(--checking), var(--line) 45%);
+      box-shadow: 0 26px 70px rgba(36, 32, 23, 0.16);
+    }
+
+    .site-card:focus-visible {
+      outline: 4px solid color-mix(in srgb, var(--checking), transparent 68%);
+      outline-offset: 3px;
+    }
+
+    .site-top {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 14px;
+      align-items: start;
+      min-width: 0;
+    }
+
+    .site-name {
+      margin: 0;
+      font-size: 1.2rem;
+      line-height: 1.25;
+      overflow-wrap: anywhere;
+    }
+
+    .site-url {
+      display: inline-block;
+      max-width: 100%;
+      margin: 9px 0 0;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 5px 9px;
+      color: var(--muted);
+      background: color-mix(in srgb, var(--bg-strong), transparent 20%);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 0.82rem;
+      line-height: 1.3;
+      overflow-wrap: anywhere;
+    }
+
+    .meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border-top: 1px solid var(--line);
+      padding-top: 14px;
+      min-width: 0;
+    }
+
+    .delay-label {
+      color: var(--muted);
+      font-size: 0.86rem;
+      font-weight: 750;
+    }
+
+    .status {
+      display: inline-flex;
+      max-width: 100%;
+      min-height: 34px;
+      align-items: center;
+      gap: 8px;
+      border-radius: 999px;
+      padding: 0 11px;
+      font-size: 0.88rem;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .status-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    .checking .status {
+      color: var(--checking);
+      background: var(--checking-bg);
+    }
+
+    .checking::before {
+      background: var(--checking);
+    }
+
+    .online .status {
+      color: var(--online);
+      background: var(--online-bg);
+    }
+
+    .online::before {
+      background: var(--online);
+    }
+
+    .slow .status {
+      color: var(--slow);
+      background: var(--slow-bg);
+    }
+
+    .slow::before {
+      background: var(--slow);
+    }
+
+    .offline .status {
+      color: var(--offline);
+      background: var(--offline-bg);
+    }
+
+    .offline::before {
+      background: var(--offline);
+    }
+
+    .latency {
+      flex: 0 0 auto;
+      color: var(--ink);
+      font-size: 1.45rem;
+      font-variant-numeric: tabular-nums;
+      font-weight: 850;
+      line-height: 1;
+    }
+
+    .latency small {
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+
+    .empty {
+      display: none;
+      border: 1px dashed var(--line);
+      border-radius: 8px;
+      padding: 28px;
+      color: var(--muted);
+      text-align: center;
+      background: color-mix(in srgb, var(--panel), transparent 12%);
+    }
+
+    .empty.visible {
+      display: block;
+    }
+
+    @media (max-width: 860px) {
+      .hero,
+      .toolbar {
+        grid-template-columns: 1fr;
+      }
+
+      .actions {
+        justify-content: flex-start;
+      }
+
+      .stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .filters {
+        width: 100%;
+        overflow-x: auto;
+      }
+    }
+
+    @media (max-width: 580px) {
+      .shell {
+        width: min(100% - 22px, 1120px);
+        padding-top: 28px;
+      }
+
+      .stats,
+      .sites {
+        grid-template-columns: 1fr;
+      }
+
+      .filter {
+        flex: 1 0 auto;
+      }
+
+      .site-card {
+        min-height: 0;
+      }
+
+      .site-top {
+        grid-template-columns: 1fr;
+      }
+
+      .status {
+        justify-self: start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero" aria-labelledby="page-title">
+      <div>
+        <p class="eyebrow" data-i18n="eyebrow">Multi-domain gateway</p>
+        <h1 id="page-title" data-i18n="headline">Rili 镜像发布页</h1>
+        <p class="subtitle" data-i18n="subtitle">This page checks each configured site from your device, shows its response delay, and opens the selected domain when you click a card.</p>
+      </div>
+      <div class="actions">
+        <label class="language-picker">
+          <span data-i18n="languageLabel">Language</span>
+          <select id="languageSelect" aria-label="Language" data-i18n-attr="aria-label:languageLabel">
+            <option value="en">English</option>
+            <option value="ja">日本語</option>
+            <option value="ko">한국어</option>
+            <option value="zh">中文</option>
+          </select>
+        </label>
+        <button class="button" type="button" id="refreshButton" title="Retest every site" data-i18n-attr="title:retestTitle">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+            <path d="M20 11a8.1 8.1 0 0 0-15.5-2m-.5-4v4h4"></path>
+            <path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4"></path>
+          </svg>
+          <span data-i18n="retest">Retest</span>
+        </button>
+      </div>
+    </section>
+
+    <section class="stats" aria-label="Connectivity summary" data-i18n-attr="aria-label:summaryLabel">
+      <div class="stat"><strong id="onlineCount">0</strong><span data-i18n="online">Online</span></div>
+      <div class="stat"><strong id="slowCount">0</strong><span data-i18n="slow">Slow</span></div>
+      <div class="stat"><strong id="offlineCount">0</strong><span data-i18n="offline">Offline</span></div>
+      <div class="stat"><strong id="bestDelay">--</strong><span data-i18n="bestDelay">Best delay</span></div>
+    </section>
+
+    <section class="toolbar" aria-label="Site tools" data-i18n-attr="aria-label:toolsLabel">
+      <label class="search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+          <circle cx="11" cy="11" r="7"></circle>
+          <path d="m20 20-3.5-3.5"></path>
+        </svg>
+        <input id="searchInput" type="search" placeholder="Search sites or domains" autocomplete="off" data-i18n-attr="placeholder:searchPlaceholder">
+      </label>
+      <div class="filters" role="group" aria-label="Status filters" data-i18n-attr="aria-label:filtersLabel">
+        <button class="filter" type="button" data-filter="all" aria-pressed="true" data-i18n="all">All</button>
+        <button class="filter" type="button" data-filter="online" aria-pressed="false" data-i18n="online">Online</button>
+        <button class="filter" type="button" data-filter="slow" aria-pressed="false" data-i18n="slow">Slow</button>
+        <button class="filter" type="button" data-filter="offline" aria-pressed="false" data-i18n="offline">Offline</button>
+      </div>
+    </section>
+
+    <section class="sites" id="siteList" aria-live="polite"></section>
+    <p class="empty" id="emptyState" data-i18n="emptyState">No sites match the current filter.</p>
+  </main>
+
+  <script>
+    const TRANSLATIONS = {
+      en: {
+        title: "Rili 镜像发布页",
+        languageLabel: "Language",
+        eyebrow: "Multi-domain gateway",
+        headline: "Rili 镜像发布页",
+        subtitle: "This page checks each configured site from your device, shows its response delay, and opens the selected domain when you click a card.",
+        retest: "Retest",
+        retestTitle: "Retest every site",
+        summaryLabel: "Connectivity summary",
+        toolsLabel: "Site tools",
+        filtersLabel: "Status filters",
+        searchPlaceholder: "Search sites or domains",
+        all: "All",
+        checking: "Checking",
+        online: "Online",
+        slow: "Slow",
+        offline: "Offline",
+        delay: "Delay",
+        bestDelay: "Best delay",
+        emptyState: "No sites match the current filter.",
+        openSite: "Open {name}",
+        primarySite: "Primary Site",
+        mirrorSite: "Mirror {number}"
+      },
+      ja: {
+        title: "Rili 镜像发布页",
+        languageLabel: "言語",
+        eyebrow: "マルチドメインゲートウェイ",
+        headline: "Rili 镜像发布页",
+        subtitle: "このページはお使いの端末から各サイトへの接続を確認し、応答遅延を表示します。カードをクリックすると選択したドメインを開きます。",
+        retest: "再テスト",
+        retestTitle: "すべてのサイトを再テスト",
+        summaryLabel: "接続状況の概要",
+        toolsLabel: "サイトツール",
+        filtersLabel: "ステータスフィルター",
+        searchPlaceholder: "サイトまたはドメインを検索",
+        all: "すべて",
+        checking: "確認中",
+        online: "オンライン",
+        slow: "低速",
+        offline: "オフライン",
+        delay: "遅延",
+        bestDelay: "最短遅延",
+        emptyState: "現在のフィルターに一致するサイトはありません。",
+        openSite: "{name} を開く",
+        primarySite: "メインサイト",
+        mirrorSite: "ミラー {number}"
+      },
+      ko: {
+        title: "Rili 镜像发布页",
+        languageLabel: "언어",
+        eyebrow: "멀티 도메인 게이트웨이",
+        headline: "Rili 镜像发布页",
+        subtitle: "이 페이지는 사용 중인 기기에서 각 사이트의 연결 상태를 확인하고 응답 지연 시간을 표시합니다. 카드를 클릭하면 선택한 도메인으로 이동합니다.",
+        retest: "다시 테스트",
+        retestTitle: "모든 사이트 다시 테스트",
+        summaryLabel: "연결 상태 요약",
+        toolsLabel: "사이트 도구",
+        filtersLabel: "상태 필터",
+        searchPlaceholder: "사이트 또는 도메인 검색",
+        all: "전체",
+        checking: "확인 중",
+        online: "온라인",
+        slow: "느림",
+        offline: "오프라인",
+        delay: "지연",
+        bestDelay: "최단 지연",
+        emptyState: "현재 필터와 일치하는 사이트가 없습니다.",
+        openSite: "{name} 열기",
+        primarySite: "기본 사이트",
+        mirrorSite: "미러 {number}"
+      },
+      zh: {
+        title: "Rili 镜像发布页",
+        languageLabel: "语言",
+        eyebrow: "多域名网关",
+        headline: "Rili 镜像发布页",
+        subtitle: "此页面会从你的设备检测每个站点的连接状态，显示响应延迟，并在点击卡片时打开对应域名。",
+        retest: "重新测试",
+        retestTitle: "重新测试所有站点",
+        summaryLabel: "连接状态摘要",
+        toolsLabel: "站点工具",
+        filtersLabel: "状态筛选",
+        searchPlaceholder: "搜索站点或域名",
+        all: "全部",
+        checking: "检测中",
+        online: "在线",
+        slow: "较慢",
+        offline: "离线",
+        delay: "延迟",
+        bestDelay: "最低延迟",
+        emptyState: "没有符合当前筛选条件的站点。",
+        openSite: "打开 {name}",
+        primarySite: "主站",
+        mirrorSite: "镜像 {number}"
+      }
+    };
+
+    const LANGUAGE_ALIASES = {
+      jp: "ja",
+      "ja-jp": "ja",
+      "ko-kr": "ko",
+      "zh-cn": "zh",
+      "zh-hans": "zh",
+      "zh-tw": "zh",
+      "zh-hant": "zh",
+      "en-us": "en",
+      "en-gb": "en"
+    };
+
+    const SITES = [
+      "https://rilichat.com",
+      "https://riliaichat.com",
+    ];
+
+    const CHECK_TIMEOUT_MS = 8000;
+    const SLOW_AFTER_MS = 1500;
+    const state = new Map();
+    let currentFilter = "all";
+    let currentSearch = "";
+    let currentLanguage = detectInitialLanguage();
+
+    const siteList = document.querySelector("#siteList");
+    const emptyState = document.querySelector("#emptyState");
+    const searchInput = document.querySelector("#searchInput");
+    const refreshButton = document.querySelector("#refreshButton");
+    const languageSelect = document.querySelector("#languageSelect");
+    const filterButtons = Array.from(document.querySelectorAll(".filter"));
+    const counters = {
+      online: document.querySelector("#onlineCount"),
+      slow: document.querySelector("#slowCount"),
+      offline: document.querySelector("#offlineCount"),
+      best: document.querySelector("#bestDelay")
+    };
+
+    function normalizeLanguage(language) {
+      const value = String(language || "").toLowerCase();
+      const normalized = LANGUAGE_ALIASES[value] || value.split("-")[0] || "en";
+      return TRANSLATIONS[normalized] ? normalized : "en";
+    }
+
+    function detectInitialLanguage() {
+      const params = new URLSearchParams(window.location.search);
+      let savedLanguage = "";
+      try {
+        savedLanguage = window.localStorage.getItem("siteGatewayLanguage") || "";
+      } catch {
+        savedLanguage = "";
+      }
+      const requested = params.get("lang") || savedLanguage;
+      if (requested) return normalizeLanguage(requested);
+      return normalizeLanguage(navigator.language || (navigator.languages && navigator.languages[0]));
+    }
+
+    function t(key, replacements = {}) {
+      const dictionary = TRANSLATIONS[currentLanguage] || TRANSLATIONS.en;
+      let value = dictionary[key] || TRANSLATIONS.en[key] || key;
+      Object.entries(replacements).forEach(([name, replacement]) => {
+        value = value.replaceAll(`{${name}}`, replacement);
+      });
+      return value;
+    }
+
+    function applyTranslations() {
+      document.documentElement.lang = currentLanguage;
+      document.title = t("title");
+
+      document.querySelectorAll("[data-i18n]").forEach((element) => {
+        element.textContent = t(element.dataset.i18n);
+      });
+
+      document.querySelectorAll("[data-i18n-attr]").forEach((element) => {
+        element.dataset.i18nAttr.split(",").forEach((pair) => {
+          const [attribute, key] = pair.split(":").map((part) => part.trim());
+          if (attribute && key) element.setAttribute(attribute, t(key));
+        });
+      });
+
+      languageSelect.value = currentLanguage;
+    }
+
+    function normalizeUrl(url) {
+      const trimmed = String(url || "").trim();
+      if (/^https?:\/\//i.test(trimmed)) return trimmed;
+      return `https://${trimmed}`;
+    }
+
+    function hostnameFor(url) {
+      try {
+        return new URL(normalizeUrl(url)).hostname;
+      } catch {
+        return url;
+      }
+    }
+
+    function siteUrl(site) {
+      if (typeof site === "string") return site;
+      return site && site.url ? site.url : "";
+    }
+
+    function siteLabel(index) {
+      if (index === 0) return t("primarySite");
+      return t("mirrorSite", { number: String(index) });
+    }
+
+    function makeProbeUrls(url) {
+      const normalized = normalizeUrl(url);
+      const parsed = new URL(normalized);
+      const origin = parsed.origin;
+      const cacheBust = `gateway_probe=${Date.now()}_${Math.random().toString(16).slice(2)}`;
+      return [`${origin}/?${cacheBust}`];
+    }
+
+    function probeFetch(src) {
+      return new Promise((resolve, reject) => {
+        const startedAt = performance.now();
+        const controller = new AbortController();
+        const timer = window.setTimeout(() => {
+          controller.abort();
+          reject(new Error("timeout"));
+        }, CHECK_TIMEOUT_MS);
+
+        fetch(src, {
+          mode: "no-cors",
+          cache: "no-store",
+          redirect: "follow",
+          signal: controller.signal
+        }).then(() => {
+          window.clearTimeout(timer);
+          resolve(Math.round(performance.now() - startedAt));
+        }).catch((error) => {
+          window.clearTimeout(timer);
+          reject(error);
+        });
+      });
+    }
+
+    async function checkSite(site, index) {
+      const url = normalizeUrl(siteUrl(site));
+      state.set(index, { status: "checking", delay: null, label: "Checking" });
+      render();
+
+      let best = Infinity;
+      let reachable = false;
+
+      try {
+        const probeUrls = makeProbeUrls(url);
+        const fetchResults = await Promise.allSettled(probeUrls.map(probeFetch));
+        for (const result of fetchResults) {
+          if (result.status === "fulfilled") {
+            reachable = true;
+            best = Math.min(best, result.value);
+          }
+        }
+      } catch {
+        reachable = false;
+      }
+
+      if (!reachable) {
+        state.set(index, { status: "offline", delay: null, label: "Offline" });
+      } else if (best >= SLOW_AFTER_MS) {
+        state.set(index, { status: "slow", delay: best, label: "Slow" });
+      } else {
+        state.set(index, { status: "online", delay: best, label: "Online" });
+      }
+
+      render();
+    }
+
+    function cardMatches(site, index) {
+      const info = state.get(index) || { status: "checking" };
+      const matchesFilter = currentFilter === "all" || info.status === currentFilter;
+      const haystack = `${siteLabel(index)} ${siteUrl(site)}`.toLowerCase();
+      const matchesSearch = !currentSearch || haystack.includes(currentSearch);
+      return matchesFilter && matchesSearch;
+    }
+
+    function statusText(info) {
+      if (info.status === "checking") return t("checking");
+      if (info.status === "slow") return t("slow");
+      if (info.status === "online") return t("online");
+      return t("offline");
+    }
+
+    function render() {
+      applyTranslations();
+
+      const fragment = document.createDocumentFragment();
+      let visible = 0;
+      let online = 0;
+      let slow = 0;
+      let offline = 0;
+      let best = Infinity;
+
+      SITES.forEach((site, index) => {
+        const info = state.get(index) || { status: "checking", delay: null, label: "Checking" };
+        if (info.status === "online") online += 1;
+        if (info.status === "slow") slow += 1;
+        if (info.status === "offline") offline += 1;
+        if (Number.isFinite(info.delay)) best = Math.min(best, info.delay);
+
+        if (!cardMatches(site, index)) return;
+        visible += 1;
+
+        const normalizedUrl = normalizeUrl(siteUrl(site));
+        const siteName = siteLabel(index);
+        const article = document.createElement("a");
+        article.className = `site-card ${info.status}`;
+        article.href = normalizedUrl;
+        article.target = "_blank";
+        article.rel = "noopener noreferrer";
+        article.setAttribute("aria-label", t("openSite", { name: siteName }));
+
+        article.innerHTML = `
+          <div class="site-top">
+            <div>
+              <h2 class="site-name">${escapeHtml(siteName)}</h2>
+              <p class="site-url">${escapeHtml(hostnameFor(normalizedUrl))}</p>
+            </div>
+            <span class="status"><span class="status-dot"></span>${statusText(info)}</span>
+          </div>
+          <div class="meta">
+            <span class="delay-label">${escapeHtml(t("delay"))}</span>
+            <span class="latency">${Number.isFinite(info.delay) ? info.delay : "--"} <small>ms</small></span>
+          </div>
+        `;
+
+        fragment.appendChild(article);
+      });
+
+      siteList.replaceChildren(fragment);
+      emptyState.classList.toggle("visible", visible === 0);
+      counters.online.textContent = online;
+      counters.slow.textContent = slow;
+      counters.offline.textContent = offline;
+      counters.best.textContent = Number.isFinite(best) ? `${best} ms` : "--";
+    }
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>"']/g, (char) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+      }[char]));
+    }
+
+    function testAllSites() {
+      SITES.forEach((_, index) => {
+        state.set(index, { status: "checking", delay: null, label: "Checking" });
+      });
+      render();
+      SITES.forEach(checkSite);
+    }
+
+    searchInput.addEventListener("input", (event) => {
+      currentSearch = event.target.value.trim().toLowerCase();
+      render();
+    });
+
+    filterButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        currentFilter = button.dataset.filter;
+        filterButtons.forEach((candidate) => {
+          candidate.setAttribute("aria-pressed", String(candidate === button));
+        });
+        render();
+      });
+    });
+
+    languageSelect.addEventListener("change", (event) => {
+      currentLanguage = normalizeLanguage(event.target.value);
+      try {
+        window.localStorage.setItem("siteGatewayLanguage", currentLanguage);
+      } catch {
+        // The selected language still applies for the current page view.
+      }
+      render();
+    });
+
+    refreshButton.addEventListener("click", testAllSites);
+
+    render();
+    testAllSites();
+  </script>
+</body>
+</html>

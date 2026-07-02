@@ -675,6 +675,7 @@
       "https://tell-me-ai.com"
     ];
 
+    const CHECK_PATH = "/health";
     const CHECK_TIMEOUT_MS = 8000;
     const SLOW_AFTER_MS = 1500;
     const state = new Map();
@@ -768,9 +769,11 @@
     function makeProbeUrls(url) {
       const normalized = normalizeUrl(url);
       const parsed = new URL(normalized);
-      const origin = parsed.origin;
+      const path = CHECK_PATH.startsWith("/") ? CHECK_PATH : `/${CHECK_PATH}`;
+      const probeUrl = new URL(path, parsed.origin);
       const cacheBust = `gateway_probe=${Date.now()}_${Math.random().toString(16).slice(2)}`;
-      return [`${origin}/?${cacheBust}`];
+      probeUrl.search = cacheBust;
+      return [probeUrl.toString()];
     }
 
     function probeFetch(src) {
